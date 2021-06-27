@@ -28,16 +28,7 @@ namespace ItsAClock
                 string time_string = currentTime.ToString("h:mm:ss");
                 string date_string = currentTime.ToString("M-dd-yyyy");
 
-                if (currentTime.Hour > 12)
-                {
-                    lblAM.Visible = false;
-                    lblPM.Visible = true;
-                }
-                else
-                {
-                    lblAM.Visible = true;
-                    lblPM.Visible = false;
-                }
+                lblPM.Text = (currentTime.Hour > 12) ? "PM" : "AM";
                 lblDate.Text = date_string;
                 lblMainTime.Text = time_string;
             }

@@ -31,7 +31,6 @@ namespace ItsAClock
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmClock));
             this.lblMainTime = new System.Windows.Forms.Label();
-            this.lblAM = new System.Windows.Forms.Label();
             this.lblPM = new System.Windows.Forms.Label();
             this.lblDate = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -42,30 +41,20 @@ namespace ItsAClock
             // 
             // lblMainTime
             // 
-            this.lblMainTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMainTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblMainTime.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.lblMainTime.Location = new System.Drawing.Point(179, 43);
+            this.lblMainTime.Location = new System.Drawing.Point(90, 38);
             this.lblMainTime.Name = "lblMainTime";
-            this.lblMainTime.Size = new System.Drawing.Size(130, 41);
+            this.lblMainTime.Size = new System.Drawing.Size(115, 32);
             this.lblMainTime.TabIndex = 1;
             this.lblMainTime.Text = "12:59:59";
             this.lblMainTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // lblAM
-            // 
-            this.lblAM.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAM.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.lblAM.Location = new System.Drawing.Point(300, 47);
-            this.lblAM.Name = "lblAM";
-            this.lblAM.Size = new System.Drawing.Size(35, 24);
-            this.lblAM.TabIndex = 2;
-            this.lblAM.Text = "AM";
             // 
             // lblPM
             // 
             this.lblPM.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPM.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.lblPM.Location = new System.Drawing.Point(300, 60);
+            this.lblPM.Location = new System.Drawing.Point(198, 47);
             this.lblPM.Name = "lblPM";
             this.lblPM.Size = new System.Drawing.Size(35, 24);
             this.lblPM.TabIndex = 3;
@@ -73,11 +62,11 @@ namespace ItsAClock
             // 
             // lblDate
             // 
-            this.lblDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDate.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.lblDate.Location = new System.Drawing.Point(0, 43);
+            this.lblDate.Location = new System.Drawing.Point(-4, 42);
             this.lblDate.Name = "lblDate";
-            this.lblDate.Size = new System.Drawing.Size(173, 41);
+            this.lblDate.Size = new System.Drawing.Size(108, 28);
             this.lblDate.TabIndex = 4;
             this.lblDate.Text = "12-31-2021";
             this.lblDate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -88,7 +77,7 @@ namespace ItsAClock
             this.clockToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(427, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(277, 24);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -112,10 +101,9 @@ namespace ItsAClock
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
-            this.ClientSize = new System.Drawing.Size(427, 215);
+            this.ClientSize = new System.Drawing.Size(277, 159);
             this.Controls.Add(this.lblDate);
             this.Controls.Add(this.lblPM);
-            this.Controls.Add(this.lblAM);
             this.Controls.Add(this.lblMainTime);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -134,7 +122,6 @@ namespace ItsAClock
 
         #endregion
         private System.Windows.Forms.Label lblMainTime;
-        private System.Windows.Forms.Label lblAM;
         private System.Windows.Forms.Label lblPM;
         private System.Windows.Forms.Label lblDate;
         private System.Windows.Forms.MenuStrip menuStrip1;

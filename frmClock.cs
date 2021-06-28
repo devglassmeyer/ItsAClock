@@ -22,6 +22,8 @@ namespace ItsAClock
             public TimeZoneInfo tzInfo;
         }
 
+        private bool _mouseIsDown = false;
+        private Point _lastLocation;
         private additionalTZStruct[] _addedTimeZones = null;
         private object _lockMe = new object();
         private List<string> _selectedTimeZoneIDs = new List<string>();
@@ -187,6 +189,33 @@ namespace ItsAClock
                 _selectedTimeZoneIDs = tzForm.GetSelectedTimeZones();
                 PaintNewTimezones();
             }
+        }
+
+        private void frmClock_MouseDown(object sender, MouseEventArgs e)
+        {
+            _mouseIsDown = true;
+            _lastLocation = e.Location;
+        }
+
+        private void frmClock_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_mouseIsDown)
+            {
+                this.Location = new Point(
+                    (this.Location.X - _lastLocation.X) + e.X, (this.Location.Y - _lastLocation.Y) + e.Y);
+
+                this.Update();
+            }
+        }
+
+        private void frmClock_MouseUp(object sender, MouseEventArgs e)
+        {
+            _mouseIsDown = false;
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

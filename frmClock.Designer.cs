@@ -36,6 +36,7 @@ namespace ItsAClock
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.clockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lblTimeZone = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -77,7 +78,7 @@ namespace ItsAClock
             this.clockToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(277, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(310, 24);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -92,16 +93,27 @@ namespace ItsAClock
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // lblTimeZone
+            // 
+            this.lblTimeZone.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTimeZone.ForeColor = System.Drawing.SystemColors.HighlightText;
+            this.lblTimeZone.Location = new System.Drawing.Point(229, 39);
+            this.lblTimeZone.Name = "lblTimeZone";
+            this.lblTimeZone.Size = new System.Drawing.Size(69, 32);
+            this.lblTimeZone.TabIndex = 6;
+            this.lblTimeZone.Text = "Eastern";
             // 
             // frmClock
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
-            this.ClientSize = new System.Drawing.Size(277, 159);
+            this.ClientSize = new System.Drawing.Size(310, 94);
+            this.Controls.Add(this.lblTimeZone);
             this.Controls.Add(this.lblDate);
             this.Controls.Add(this.lblPM);
             this.Controls.Add(this.lblMainTime);
@@ -127,6 +139,7 @@ namespace ItsAClock
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem clockToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.Label lblTimeZone;
     }
 }
 

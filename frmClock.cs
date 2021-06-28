@@ -27,7 +27,7 @@ namespace ItsAClock
 
                 string time_string = currentTime.ToString("h:mm:ss");
                 string date_string = currentTime.ToString("M-dd-yyyy");
-
+                lblTimeZone.Text = TimeZone.CurrentTimeZone.IsDaylightSavingTime(currentTime) ? TimeZone.CurrentTimeZone.DaylightName : TimeZone.CurrentTimeZone.StandardName;
                 lblPM.Text = (currentTime.Hour > 12) ? "PM" : "AM";
                 lblDate.Text = date_string;
                 lblMainTime.Text = time_string;

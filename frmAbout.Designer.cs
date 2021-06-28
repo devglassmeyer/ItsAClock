@@ -35,7 +35,7 @@ namespace ItsAClock
             // 
             // lblMain
             // 
-            this.lblMain.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMain.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblMain.Location = new System.Drawing.Point(12, 23);
             this.lblMain.Name = "lblMain";
             this.lblMain.Size = new System.Drawing.Size(380, 167);

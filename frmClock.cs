@@ -51,6 +51,18 @@ namespace ItsAClock
             {
                 for (int i =0; i < _addedTimeZones.Length; i++)
                 {
+                    _addedTimeZones[i].dateLabel.MouseDown -= new MouseEventHandler(lbl_added_MouseDown);
+                    _addedTimeZones[i].dateLabel.MouseMove -= new MouseEventHandler(lbl_added_MouseMove);
+                    _addedTimeZones[i].dateLabel.MouseUp -= new MouseEventHandler(lbl_added_MouseUp);
+
+                    _addedTimeZones[i].timeLabel.MouseDown -= new MouseEventHandler(lbl_added_MouseDown);
+                    _addedTimeZones[i].timeLabel.MouseMove -= new MouseEventHandler(lbl_added_MouseMove);
+                    _addedTimeZones[i].timeLabel.MouseUp -= new MouseEventHandler(lbl_added_MouseUp);
+
+                    _addedTimeZones[i].timezonelabel.MouseDown -= new MouseEventHandler(lbl_added_MouseDown);
+                    _addedTimeZones[i].timezonelabel.MouseMove -= new MouseEventHandler(lbl_added_MouseMove);
+                    _addedTimeZones[i].timezonelabel.MouseUp -= new MouseEventHandler(lbl_added_MouseUp);
+
                     this.Controls.Remove(_addedTimeZones[i].dateLabel);
                     this.Controls.Remove(_addedTimeZones[i].timeLabel);
                     this.Controls.Remove(_addedTimeZones[i].timezonelabel);
@@ -91,7 +103,6 @@ namespace ItsAClock
                     _addedTimeZones[i].timezonelabel = CreateLabelOffAnother(this.lblTimeZone);
                     _addedTimeZones[i].tzInfo = TimeZoneInfo.FindSystemTimeZoneById(_selectedTimeZoneIDs[i]);
 
-
                     // position controls
                     int topBuffer = 5;
                     _addedTimeZones[i].dateLabel.Top = lblDate.Top + (topBuffer * (i + 1)) + (lblDate.Height * (i + 1));
@@ -104,6 +115,17 @@ namespace ItsAClock
                     _addedTimeZones[i].timezonelabel.Left = lblTimeZone.Left;
                     _addedTimeZones[i].timezonelabel.Text = _addedTimeZones[i].tzInfo.DisplayName;
 
+                    _addedTimeZones[i].dateLabel.MouseDown += new MouseEventHandler(lbl_added_MouseDown);
+                    _addedTimeZones[i].dateLabel.MouseMove += new MouseEventHandler(lbl_added_MouseMove);
+                    _addedTimeZones[i].dateLabel.MouseUp += new MouseEventHandler(lbl_added_MouseUp);
+
+                    _addedTimeZones[i].timeLabel.MouseDown += new MouseEventHandler(lbl_added_MouseDown);
+                    _addedTimeZones[i].timeLabel.MouseMove += new MouseEventHandler(lbl_added_MouseMove);
+                    _addedTimeZones[i].timeLabel.MouseUp += new MouseEventHandler(lbl_added_MouseUp);
+
+                    _addedTimeZones[i].timezonelabel.MouseDown += new MouseEventHandler(lbl_added_MouseDown);
+                    _addedTimeZones[i].timezonelabel.MouseMove += new MouseEventHandler(lbl_added_MouseMove);
+                    _addedTimeZones[i].timezonelabel.MouseUp += new MouseEventHandler(lbl_added_MouseUp);
                 }
             }
             else
@@ -127,7 +149,8 @@ namespace ItsAClock
 
                 string time_string = currentTime.ToString("h:mm:ss tt");
                 string date_string = currentTime.ToString("M-dd-yyyy");
-                lblTimeZone.Text = TimeZone.CurrentTimeZone.IsDaylightSavingTime(currentTime) ? TimeZone.CurrentTimeZone.DaylightName : TimeZone.CurrentTimeZone.StandardName;
+                lblTimeZone.Text = TimeZoneInfo.Local.DisplayName;
+
                 lblDate.Text = date_string;
                 lblMainTime.Text = time_string;
 
@@ -216,6 +239,92 @@ namespace ItsAClock
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void lbl_added_MouseDown(object sender, MouseEventArgs e)
+        {
+            _mouseIsDown = true;
+            _lastLocation = e.Location;
+        }
+        private void lbl_added_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_mouseIsDown)
+            {
+                this.Location = new Point(
+                    (this.Location.X - _lastLocation.X) + e.X, (this.Location.Y - _lastLocation.Y) + e.Y);
+
+                this.Update();
+            }
+        }
+        private void lbl_added_MouseUp(object sender, MouseEventArgs e)
+        {
+            _mouseIsDown = false;
+        }
+
+        private void lblDate_MouseDown(object sender, MouseEventArgs e)
+        {
+            _mouseIsDown = true;
+            _lastLocation = e.Location;
+        }
+
+        private void lblDate_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_mouseIsDown)
+            {
+                this.Location = new Point(
+                    (this.Location.X - _lastLocation.X) + e.X, (this.Location.Y - _lastLocation.Y) + e.Y);
+
+                this.Update();
+            }
+        }
+
+        private void lblDate_MouseUp(object sender, MouseEventArgs e)
+        {
+            _mouseIsDown = false;
+        }
+
+        private void lblMainTime_MouseDown(object sender, MouseEventArgs e)
+        {
+            _mouseIsDown = true;
+            _lastLocation = e.Location;
+        }
+
+        private void lblMainTime_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_mouseIsDown)
+            {
+                this.Location = new Point(
+                    (this.Location.X - _lastLocation.X) + e.X, (this.Location.Y - _lastLocation.Y) + e.Y);
+
+                this.Update();
+            }
+        }
+
+        private void lblMainTime_MouseUp(object sender, MouseEventArgs e)
+        {
+            _mouseIsDown = false;
+        }
+
+        private void lblTimeZone_MouseDown(object sender, MouseEventArgs e)
+        {
+            _mouseIsDown = true;
+            _lastLocation = e.Location;
+        }
+
+        private void lblTimeZone_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_mouseIsDown)
+            {
+                this.Location = new Point(
+                    (this.Location.X - _lastLocation.X) + e.X, (this.Location.Y - _lastLocation.Y) + e.Y);
+
+                this.Update();
+            }
+        }
+
+        private void lblTimeZone_MouseUp(object sender, MouseEventArgs e)
+        {
+            _mouseIsDown = false;
         }
     }
 }

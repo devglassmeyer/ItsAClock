@@ -36,8 +36,8 @@ namespace ItsAClock
             this.clockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lblTimeZone = new System.Windows.Forms.Label();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lblTimeZone = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -51,6 +51,9 @@ namespace ItsAClock
             this.lblMainTime.TabIndex = 1;
             this.lblMainTime.Text = "12:59:59";
             this.lblMainTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblMainTime.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lblMainTime_MouseDown);
+            this.lblMainTime.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lblMainTime_MouseMove);
+            this.lblMainTime.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lblMainTime_MouseUp);
             // 
             // lblDate
             // 
@@ -62,6 +65,9 @@ namespace ItsAClock
             this.lblDate.TabIndex = 4;
             this.lblDate.Text = "12-31-2021";
             this.lblDate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblDate.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lblDate_MouseDown);
+            this.lblDate.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lblDate_MouseMove);
+            this.lblDate.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lblDate_MouseUp);
             // 
             // menuStrip1
             // 
@@ -86,16 +92,23 @@ namespace ItsAClock
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(164, 22);
             this.toolStripMenuItem1.Text = "Select Timezones";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // lblTimeZone
             // 
@@ -107,13 +120,9 @@ namespace ItsAClock
             this.lblTimeZone.TabIndex = 6;
             this.lblTimeZone.Text = "Eastern";
             this.lblTimeZone.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.lblTimeZone.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lblTimeZone_MouseDown);
+            this.lblTimeZone.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lblTimeZone_MouseMove);
+            this.lblTimeZone.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lblTimeZone_MouseUp);
             // 
             // frmClock
             // 

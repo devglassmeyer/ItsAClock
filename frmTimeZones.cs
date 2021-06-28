@@ -135,7 +135,7 @@ namespace ItsAClock
             if (_originalSelection[e.Index].TimezoneID == TimeZoneInfo.Local.Id)
             {
                 // this is our current time zone -> yell at the user
-                MessageBox.Show(this, "You cannot disable your current time zone, after all how would you know what time it is?", "No you Don't", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, "You cannot disable your current time zone, after all how would you know what time it is?", "No You Don't", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 e.NewValue = CheckState.Checked;
             }
             else

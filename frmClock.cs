@@ -22,14 +22,57 @@ namespace ItsAClock
             public TimeZoneInfo tzInfo;
         }
 
+        internal static class mySettings
+        {
+            private static object _lockMe = new object();
+            private static bool _showSeconds = true;
+            private static int _lastMinute = 0;
+            
+            internal static int LastMinute
+            {
+                get
+                {
+                    int ret = 0;
+                    lock (_lockMe) { ret = _lastMinute; }
+                    return ret;
+                }
+                set
+                {
+                    lock (_lockMe) { _lastMinute = value; }
+                }
+            }
+
+            internal static bool ShowSeconds
+            {
+                get
+                {
+                    bool ret = true;
+                    lock (_lockMe) { ret = _showSeconds; }
+                    return ret;
+                }
+                set
+                {
+                    lock (_lockMe) 
+                    { 
+                        _showSeconds = value; 
+                        if (!_showSeconds) { _lastMinute = 0; }
+                    }
+                }
+            }
+        }
+
+
         private bool _mouseIsDown = false;
         private Point _lastLocation;
         private additionalTZStruct[] _addedTimeZones = null;
         private object _lockMe = new object();
         private List<string> _selectedTimeZoneIDs = new List<string>();
         private int _startingHeight = 0;
+        private int _startingWidth = 0;
         private int _clientHeight = 0;
         private bool _isRePaintInProgress = false;
+
+
 
         private bool IsPainInProgress
         {
@@ -93,8 +136,16 @@ namespace ItsAClock
 
             if (_selectedTimeZoneIDs.Count > 0)
             {
+                mySettings.LastMinute = 0;
                 _addedTimeZones = new additionalTZStruct[_selectedTimeZoneIDs.Count];
-                this.Size = new Size(this.Width, _startingHeight + (((_clientHeight - (lblDate.Top / 2)) / 2) * _selectedTimeZoneIDs.Count));
+                if (mySettings.ShowSeconds)
+                {
+                    this.Size = new Size(_startingWidth, _startingHeight + (((_clientHeight - (lblDate.Top / 2)) / 2) * _selectedTimeZoneIDs.Count));
+                }
+                else
+                {
+                    this.Size = new Size(_startingWidth - 30, _startingHeight + (((_clientHeight - (lblDate.Top / 2)) / 2) * _selectedTimeZoneIDs.Count));
+                }
 
                 for (int i = 0; i < _selectedTimeZoneIDs.Count; i++)
                 {
@@ -131,8 +182,37 @@ namespace ItsAClock
             else
             {
                 this.Height = _startingHeight;
+                if (mySettings.ShowSeconds)
+                {
+                    this.Width = _startingWidth;
+                }
+                else
+                {
+                    this.Width = _startingWidth - 30;
+                }
+                
             }
             IsPainInProgress = false;
+        }
+
+        private void PaintSecondsChange()
+        {
+            IsPainInProgress = true;
+            const int TIME_SECONDS_WIDTH = 150;
+            const int TIME_NOSECONDS_WIDTH = 115;
+            const int TIMEZONE_SECONDS_LEFT = 260;
+            const int TIMEZONE_NOSECONDS_LEFT = TIMEZONE_SECONDS_LEFT - (TIME_SECONDS_WIDTH - TIME_NOSECONDS_WIDTH);
+            if (mySettings.ShowSeconds)
+            {
+                lblMainTime.Width = TIME_SECONDS_WIDTH;
+                lblTimeZone.Left = TIMEZONE_SECONDS_LEFT;
+            }
+            else
+            {
+                lblMainTime.Width = TIME_NOSECONDS_WIDTH;
+                lblTimeZone.Left = TIMEZONE_NOSECONDS_LEFT;
+            }
+            PaintNewTimezones();
         }
 
         private void PaintTime()
@@ -146,9 +226,18 @@ namespace ItsAClock
                     return;
                 }
                 DateTime currentTime = DateTime.Now;
+                int last_minute = mySettings.LastMinute;
+                bool show_seconds = mySettings.ShowSeconds;
+                if ((last_minute == currentTime.Minute) && !mySettings.ShowSeconds && (last_minute != 0))
+                {
+                    return;
+                }
 
-                string time_string = currentTime.ToString("h:mm:ss tt");
-                string date_string = currentTime.ToString("M-dd-yyyy");
+                string time_format = show_seconds ? "h:mm:ss tt" : "h:mm tt";
+                mySettings.LastMinute = currentTime.Minute;
+
+                string time_string = currentTime.ToString(time_format);
+                string date_string = currentTime.ToString("M-dd-yy");
                 lblTimeZone.Text = TimeZoneInfo.Local.DisplayName;
 
                 lblDate.Text = date_string;
@@ -159,8 +248,8 @@ namespace ItsAClock
                     for (int i = 0; i < _addedTimeZones.Length; i++)
                     {
                         DateTime convertedTime = TimeZoneInfo.ConvertTime(currentTime, _addedTimeZones[i].tzInfo);
-                        _addedTimeZones[i].dateLabel.Text = convertedTime.ToString("M-dd-yyyy");
-                        _addedTimeZones[i].timeLabel.Text = convertedTime.ToString("h:mm:ss tt");
+                        _addedTimeZones[i].dateLabel.Text = convertedTime.ToString("M-dd-yy");
+                        _addedTimeZones[i].timeLabel.Text = convertedTime.ToString(time_format);
                     }
                 }
 
@@ -192,6 +281,7 @@ namespace ItsAClock
             InitializeComponent();
             StartClockThread();
             _startingHeight = this.Height;
+            _startingWidth = this.Width;
             _clientHeight = this.ClientSize.Height;
         }
 
@@ -210,30 +300,9 @@ namespace ItsAClock
             if (tzForm.IsOkClicked)
             {
                 _selectedTimeZoneIDs = tzForm.GetSelectedTimeZones();
+
                 PaintNewTimezones();
             }
-        }
-
-        private void frmClock_MouseDown(object sender, MouseEventArgs e)
-        {
-            _mouseIsDown = true;
-            _lastLocation = e.Location;
-        }
-
-        private void frmClock_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (_mouseIsDown)
-            {
-                this.Location = new Point(
-                    (this.Location.X - _lastLocation.X) + e.X, (this.Location.Y - _lastLocation.Y) + e.Y);
-
-                this.Update();
-            }
-        }
-
-        private void frmClock_MouseUp(object sender, MouseEventArgs e)
-        {
-            _mouseIsDown = false;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -261,70 +330,10 @@ namespace ItsAClock
             _mouseIsDown = false;
         }
 
-        private void lblDate_MouseDown(object sender, MouseEventArgs e)
+        private void toolStropShowSeconds_CheckStateChanged(object sender, EventArgs e)
         {
-            _mouseIsDown = true;
-            _lastLocation = e.Location;
-        }
-
-        private void lblDate_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (_mouseIsDown)
-            {
-                this.Location = new Point(
-                    (this.Location.X - _lastLocation.X) + e.X, (this.Location.Y - _lastLocation.Y) + e.Y);
-
-                this.Update();
-            }
-        }
-
-        private void lblDate_MouseUp(object sender, MouseEventArgs e)
-        {
-            _mouseIsDown = false;
-        }
-
-        private void lblMainTime_MouseDown(object sender, MouseEventArgs e)
-        {
-            _mouseIsDown = true;
-            _lastLocation = e.Location;
-        }
-
-        private void lblMainTime_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (_mouseIsDown)
-            {
-                this.Location = new Point(
-                    (this.Location.X - _lastLocation.X) + e.X, (this.Location.Y - _lastLocation.Y) + e.Y);
-
-                this.Update();
-            }
-        }
-
-        private void lblMainTime_MouseUp(object sender, MouseEventArgs e)
-        {
-            _mouseIsDown = false;
-        }
-
-        private void lblTimeZone_MouseDown(object sender, MouseEventArgs e)
-        {
-            _mouseIsDown = true;
-            _lastLocation = e.Location;
-        }
-
-        private void lblTimeZone_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (_mouseIsDown)
-            {
-                this.Location = new Point(
-                    (this.Location.X - _lastLocation.X) + e.X, (this.Location.Y - _lastLocation.Y) + e.Y);
-
-                this.Update();
-            }
-        }
-
-        private void lblTimeZone_MouseUp(object sender, MouseEventArgs e)
-        {
-            _mouseIsDown = false;
+            mySettings.ShowSeconds = toolStropShowSeconds.Checked;
+            PaintSecondsChange();
         }
     }
 }

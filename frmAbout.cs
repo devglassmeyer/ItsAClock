@@ -20,8 +20,9 @@ namespace ItsAClock
             lblMain.Text = "Hey, this isn't that complicated. It is a clock.";
             lblMain.Text += Environment.NewLine;
             lblMain.Text += Environment.NewLine;
-            lblMain.Text += "Select your favorite time zones to show the current date and time. Be amazed as the time ticks by one second at a time.";
+            lblMain.Text += "Select your favorite time zones to show the current date and time. Be amazed as the time ticks by one second at a time. Or turn off seconds for a even more boring experience!";
             lblMain.Text += Environment.NewLine;
+
             lblMain.Text += Environment.NewLine;
 
             var v = Assembly.GetExecutingAssembly().GetName().Version;

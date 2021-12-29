@@ -17,6 +17,7 @@ namespace ItsAClock
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmClock());
+            // Application.Run(new frmTimeZonePicker(new TZDataList()));
         }
     }
 }

@@ -27,7 +27,20 @@ namespace ItsAClock
             private static object _lockMe = new object();
             private static bool _showSeconds = true;
             private static int _lastMinute = 0;
+            private static string _saveFileName = "";
             
+            internal static string SaveFileName
+            {
+                get 
+                { 
+                    if (string.IsNullOrWhiteSpace(_saveFileName))
+                    {
+                        _saveFileName = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ItsAClockSettings.xml");
+                    }
+                    return _saveFileName; 
+                }
+                set { _saveFileName = value; }
+            }
             internal static int LastMinute
             {
                 get
@@ -61,17 +74,17 @@ namespace ItsAClock
             }
         }
 
-
+        private int _rightclick_index = -1;
         private bool _mouseIsDown = false;
         private Point _lastLocation;
         private additionalTZStruct[] _addedTimeZones = null;
         private object _lockMe = new object();
-        private List<string> _selectedTimeZoneIDs = new List<string>();
+        private TZDataList _selected_TZ = new TZDataList();
         private int _startingHeight = 0;
         private int _startingWidth = 0;
         private int _clientHeight = 0;
         private bool _isRePaintInProgress = false;
-
+        private bool _isLoading = false;
 
 
         private bool IsPainInProgress
@@ -128,31 +141,35 @@ namespace ItsAClock
             return newLabel;
         }
 
-        private void PaintNewTimezones()
+        private void PaintNewTimezones2()
         {
             IsPainInProgress = true;
 
             CleanUp();
 
-            if (_selectedTimeZoneIDs.Count > 0)
+            var timezones_to_show = _selected_TZ.TimeZoneData.FindAll(x => x.ShowTimeForTimeZone == true);
+
+            if ((timezones_to_show!=null) && (timezones_to_show.Count > 0))
             {
                 mySettings.LastMinute = 0;
-                _addedTimeZones = new additionalTZStruct[_selectedTimeZoneIDs.Count];
+                _addedTimeZones = new additionalTZStruct[timezones_to_show.Count];
                 if (mySettings.ShowSeconds)
                 {
-                    this.Size = new Size(_startingWidth, _startingHeight + (((_clientHeight - (lblDate.Top / 2)) / 2) * _selectedTimeZoneIDs.Count));
+                    this.Size = new Size(_startingWidth, _startingHeight + (((_clientHeight - (lblDate.Top / 2)) / 2) * timezones_to_show.Count));
                 }
                 else
                 {
-                    this.Size = new Size(_startingWidth - 30, _startingHeight + (((_clientHeight - (lblDate.Top / 2)) / 2) * _selectedTimeZoneIDs.Count));
+                    this.Size = new Size(_startingWidth - 30, _startingHeight + (((_clientHeight - (lblDate.Top / 2)) / 2) * timezones_to_show.Count));
                 }
-
-                for (int i = 0; i < _selectedTimeZoneIDs.Count; i++)
+                for (int i = 0; i < timezones_to_show.Count; i++)
                 {
                     _addedTimeZones[i].dateLabel = CreateLabelOffAnother(this.lblDate);
+                    _addedTimeZones[i].dateLabel.Tag = i;
                     _addedTimeZones[i].timeLabel = CreateLabelOffAnother(lblMainTime);
+                    _addedTimeZones[i].timeLabel.Tag = i;
                     _addedTimeZones[i].timezonelabel = CreateLabelOffAnother(this.lblTimeZone);
-                    _addedTimeZones[i].tzInfo = TimeZoneInfo.FindSystemTimeZoneById(_selectedTimeZoneIDs[i]);
+                    _addedTimeZones[i].timezonelabel.Tag = i;
+                    _addedTimeZones[i].tzInfo = TimeZoneInfo.FindSystemTimeZoneById(timezones_to_show[i].TimeZoneID);
 
                     // position controls
                     int topBuffer = 5;
@@ -164,7 +181,7 @@ namespace ItsAClock
 
                     _addedTimeZones[i].timezonelabel.Top = lblTimeZone.Top + (topBuffer * (i + 1)) + (lblTimeZone.Height * (i + 1));
                     _addedTimeZones[i].timezonelabel.Left = lblTimeZone.Left;
-                    _addedTimeZones[i].timezonelabel.Text = _addedTimeZones[i].tzInfo.DisplayName;
+                    _addedTimeZones[i].timezonelabel.Text = timezones_to_show[i].IsCustomNameOn() ? timezones_to_show[i].CustomName : _addedTimeZones[i].tzInfo.DisplayName;
 
                     _addedTimeZones[i].dateLabel.MouseDown += new MouseEventHandler(lbl_added_MouseDown);
                     _addedTimeZones[i].dateLabel.MouseMove += new MouseEventHandler(lbl_added_MouseMove);
@@ -190,7 +207,7 @@ namespace ItsAClock
                 {
                     this.Width = _startingWidth - 30;
                 }
-                
+
             }
             IsPainInProgress = false;
         }
@@ -212,7 +229,7 @@ namespace ItsAClock
                 lblMainTime.Width = TIME_NOSECONDS_WIDTH;
                 lblTimeZone.Left = TIMEZONE_NOSECONDS_LEFT;
             }
-            PaintNewTimezones();
+            PaintNewTimezones2();
         }
 
         private void PaintTime()
@@ -223,6 +240,17 @@ namespace ItsAClock
                 if (this.InvokeRequired)
                 {
                     this.Invoke(new noparms(PaintTime));
+                    return;
+                }
+                if (mySettings.ShowSeconds != _selected_TZ.IsSecondsOn)
+                {
+                    // this will happen on startup 
+                    // we do this here to make sure all labels are loaded and created OK
+                    mySettings.ShowSeconds = _selected_TZ.IsSecondsOn;
+                    _isLoading = true;
+                    toolStropShowSeconds.Checked = mySettings.ShowSeconds;
+                    _isLoading = false;
+                    PaintSecondsChange();
                     return;
                 }
                 DateTime currentTime = DateTime.Now;
@@ -238,7 +266,8 @@ namespace ItsAClock
 
                 string time_string = currentTime.ToString(time_format);
                 string date_string = currentTime.ToString("M-dd-yy");
-                lblTimeZone.Text = TimeZoneInfo.Local.DisplayName;
+                
+                lblTimeZone.Text = _selected_TZ.IsCustomNameOn() ? _selected_TZ.CustomName : TimeZoneInfo.Local.DisplayName;
 
                 lblDate.Text = date_string;
                 lblMainTime.Text = time_string;
@@ -278,11 +307,29 @@ namespace ItsAClock
         
         public frmClock()
         {
+            _isLoading = true;
             InitializeComponent();
             StartClockThread();
             _startingHeight = this.Height;
             _startingWidth = this.Width;
             _clientHeight = this.ClientSize.Height;
+
+            if (System.IO.File.Exists(mySettings.SaveFileName))
+            {
+                try
+                {
+                    _selected_TZ = FileUtil.ReadFromXmlFile<TZDataList>(mySettings.SaveFileName);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.WriteLine("Error reading " + mySettings.SaveFileName + Environment.NewLine + ex.ToString());
+                }
+            }
+            if ((_selected_TZ!=null) && (_selected_TZ.TimeZoneData.Count > 0))
+            {
+                PaintNewTimezones2();
+            }
+            _isLoading = false;
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -294,14 +341,21 @@ namespace ItsAClock
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            frmTimeZones tzForm = new frmTimeZones(_selectedTimeZoneIDs);
-            tzForm.ShowDialog(this);
-
-            if (tzForm.IsOkClicked)
+            frmTimeZonePicker tzPick = new frmTimeZonePicker(_selected_TZ);
+            tzPick.ShowDialog(this);
+            if (tzPick.IsOkClicked)
             {
-                _selectedTimeZoneIDs = tzForm.GetSelectedTimeZones();
-
-                PaintNewTimezones();
+                _selected_TZ = tzPick.GetIncludedTZList();
+                try
+                {
+                    FileUtil.WriteToXmlFile<TZDataList>(mySettings.SaveFileName, _selected_TZ);
+                }
+                catch (Exception ex)
+                {
+                    // output error here
+                    System.Diagnostics.Trace.WriteLine("Error saving time zone data: " + Environment.NewLine + ex.ToString());
+                }
+                PaintNewTimezones2();
             }
         }
 
@@ -312,9 +366,94 @@ namespace ItsAClock
 
         private void lbl_added_MouseDown(object sender, MouseEventArgs e)
         {
-            _mouseIsDown = true;
-            _lastLocation = e.Location;
+            if (e.Button == MouseButtons.Left)
+            {
+                _mouseIsDown = true;
+                _lastLocation = e.Location;
+            }
+            else
+            {
+                if (e.Button == MouseButtons.Right)
+                {
+                    // show menu of selections
+                    Label you_clicked_on_me = sender as Label;
+                    string custom_name = string.Empty;
+                    string display_name = string.Empty;
+                    bool is_customname_in_use = false;
+                    bool has_custom_name = false;
+
+                    if (you_clicked_on_me.Tag == null)
+                    {
+                        has_custom_name = _selected_TZ.HasCustomName();
+                        if (has_custom_name)
+                        {
+                            _rightclick_index = -1; // our top main time zone - local to us, the center of our bubble
+                            is_customname_in_use = _selected_TZ.IsCustomNameOn();
+                            custom_name = _selected_TZ.CustomName;
+                            display_name = TimeZoneInfo.Local.DisplayName;
+                        }
+                    }
+                    else
+                    {
+                        int my_index = (int)you_clicked_on_me.Tag;
+                        string timezone_id = _addedTimeZones[my_index].tzInfo.Id;
+                        var myTZ = _selected_TZ.TimeZoneData.FirstOrDefault(x => x.TimeZoneID == timezone_id);
+                        has_custom_name = myTZ.HasCustomName();
+                        if (has_custom_name)
+                        {
+                            _rightclick_index = my_index;
+                            custom_name = myTZ.CustomName;
+                            display_name = _addedTimeZones[my_index].tzInfo.DisplayName;
+                            is_customname_in_use = myTZ.UseCustomName;
+                        }
+                    }
+
+                    if (has_custom_name)
+                    {
+                        ContextMenu cm = new ContextMenu();
+                        MenuItem mu = new MenuItem(custom_name);
+                        if (is_customname_in_use)
+                        {
+                            mu.Checked = true;
+                        }
+                        else
+                        {
+                            mu.Checked = false;
+                            mu.Click += Mu_Click;
+                        }
+                        MenuItem mu_displayname = new MenuItem(display_name);
+                        mu_displayname.Checked = !mu.Checked;
+                        if (!mu_displayname.Checked)
+                        {
+                            mu_displayname.Click += Mu_Click;
+                        }
+                        cm.MenuItems.Add(mu);
+                        cm.MenuItems.Add(mu_displayname);
+
+                        cm.Show(this, new Point(e.X + ((Control)sender).Left + 20, e.Y + ((Control)sender).Top + 20));
+                    }
+                }
+            }
         }
+
+        private void Mu_Click(object sender, EventArgs e)
+        {
+            if (_rightclick_index == -1)
+            {
+                // main - local time zone
+                _selected_TZ.UseCustomName = !_selected_TZ.UseCustomName;
+                lblTimeZone.Text = _selected_TZ.UseCustomName ? _selected_TZ.CustomName : TimeZoneInfo.Local.DisplayName;
+            }
+            else
+            {
+                string timezone_id = _addedTimeZones[_rightclick_index].tzInfo.Id;
+                var myTZ = _selected_TZ.TimeZoneData.FirstOrDefault(x => x.TimeZoneID == timezone_id);
+                myTZ.UseCustomName = !myTZ.UseCustomName;
+
+                _addedTimeZones[_rightclick_index].timezonelabel.Text = myTZ.UseCustomName ? myTZ.CustomName : _addedTimeZones[_rightclick_index].tzInfo.DisplayName;
+            }
+        }
+
         private void lbl_added_MouseMove(object sender, MouseEventArgs e)
         {
             if (_mouseIsDown)
@@ -332,8 +471,67 @@ namespace ItsAClock
 
         private void toolStropShowSeconds_CheckStateChanged(object sender, EventArgs e)
         {
-            mySettings.ShowSeconds = toolStropShowSeconds.Checked;
-            PaintSecondsChange();
+            if (!_isLoading)
+            {
+                mySettings.ShowSeconds = toolStropShowSeconds.Checked;
+                _selected_TZ.IsSecondsOn = mySettings.ShowSeconds;
+                try { FileUtil.WriteToXmlFile<TZDataList>(mySettings.SaveFileName, _selected_TZ); }
+                catch (Exception ex) { System.Diagnostics.Trace.WriteLine("Error saving " + mySettings.SaveFileName + Environment.NewLine + ex.ToString()); }
+                PaintSecondsChange();
+            }
+        }
+
+        private void saveTimezonesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmSaveInfo s = new frmSaveInfo(mySettings.SaveFileName, _selected_TZ);
+            s.ShowDialog(this);
+
+            if (s.IsFileLoaded())
+            {
+                // we have a new file and new data!
+                _selected_TZ = s.GetTZData();
+                mySettings.SaveFileName = s.SaveFileName();
+                try { FileUtil.WriteToXmlFile<TZDataList>(mySettings.SaveFileName, _selected_TZ); }
+                catch (Exception ex)
+                {
+                    // output error here
+                    System.Diagnostics.Trace.WriteLine("Error saving time zone data: " + Environment.NewLine + ex.ToString());
+                }
+                PaintNewTimezones2();
+                return;
+            }
+
+            string test_file = s.SaveFileName();
+            if (!string.IsNullOrWhiteSpace(test_file) && (test_file != mySettings.SaveFileName))
+            {
+                try
+                {
+                    if (!System.IO.File.Exists(test_file))
+                    {
+                        // try to create the file
+                        try
+                        {
+                            FileUtil.WriteToXmlFile<TZDataList>(test_file, _selected_TZ);
+                        }
+                        catch (Exception ex) { System.Diagnostics.Trace.WriteLine("Error tring to save test file " + test_file + Environment.NewLine + ex.ToString()); }
+
+                        if (System.IO.File.Exists(test_file))
+                        {
+                            // this should be true - if not we do not want to use this file name
+                            mySettings.SaveFileName = test_file;
+                        }
+                    }
+
+                    if (System.IO.File.Exists(test_file))
+                    {
+                        mySettings.SaveFileName = test_file;
+
+                    }
+                }
+                catch (Exception ex) { System.Diagnostics.Trace.WriteLine("Error checking if file exists " + test_file + Environment.NewLine + ex.ToString()); }
+
+            }
+
         }
     }
 }

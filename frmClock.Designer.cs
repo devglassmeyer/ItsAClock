@@ -37,8 +37,10 @@ namespace ItsAClock
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStropShowSeconds = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveTimezonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lblTimeZone = new System.Windows.Forms.Label();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -85,8 +87,10 @@ namespace ItsAClock
             this.clockToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1,
             this.toolStropShowSeconds,
-            this.aboutToolStripMenuItem,
-            this.exitToolStripMenuItem});
+            this.saveTimezonesToolStripMenuItem,
+            this.exitToolStripMenuItem,
+            this.toolStripMenuItem2,
+            this.aboutToolStripMenuItem});
             this.clockToolStripMenuItem.Name = "clockToolStripMenuItem";
             this.clockToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.clockToolStripMenuItem.Text = "Clock";
@@ -115,6 +119,13 @@ namespace ItsAClock
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // saveTimezonesToolStripMenuItem
+            // 
+            this.saveTimezonesToolStripMenuItem.Name = "saveTimezonesToolStripMenuItem";
+            this.saveTimezonesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveTimezonesToolStripMenuItem.Text = "Save Timezones";
+            this.saveTimezonesToolStripMenuItem.Click += new System.EventHandler(this.saveTimezonesToolStripMenuItem_Click);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
@@ -135,6 +146,11 @@ namespace ItsAClock
             this.lblTimeZone.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lbl_added_MouseDown);
             this.lblTimeZone.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lbl_added_MouseMove);
             this.lblTimeZone.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lbl_added_MouseUp);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
             // 
             // frmClock
             // 
@@ -173,6 +189,8 @@ namespace ItsAClock
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStropShowSeconds;
+        private System.Windows.Forms.ToolStripMenuItem saveTimezonesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
     }
 }
 

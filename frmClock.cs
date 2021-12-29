@@ -377,6 +377,13 @@ namespace ItsAClock
                 {
                     // show menu of selections
                     Label you_clicked_on_me = sender as Label;
+
+                    if (you_clicked_on_me == null)
+                    {
+                        // we clicked on the form - not one of the labels - do nothing here
+                        return;
+                    }
+
                     string custom_name = string.Empty;
                     string display_name = string.Empty;
                     bool is_customname_in_use = false;
